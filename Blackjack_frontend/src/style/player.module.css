@@ -1,0 +1,49 @@
+.handContainer {
+    color: white;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 0.5em;
+   
+  }
+  
+  .cardContainer {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 25px;
+
+  }
+  
+ 
+  
+  .bottom{
+    position: absolute;
+    left: 350px;
+    right:200px;
+    top:660px
+   
+  }
+  .top{
+    position: absolute;
+    left: 100px;
+    right:200px;
+    top:150px
+
+  }
+  .left{
+    position: absolute;
+    left:320px;
+    top:430px
+  }
+
+  .right{
+    position: absolute;
+    left:1700px;
+    top:380px
+
+  }
+  
+ 
+  
+ 
