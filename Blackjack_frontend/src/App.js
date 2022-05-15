@@ -6,6 +6,8 @@ import styles from "../src/style/table.module.css"
 import backgroundImage from "./table_background.jpeg"
 import StartDialog from './components/StartDialog';
 
+import Web3 from 'web3'
+
 
 
 //import ReactDOM from 'react-dom';
@@ -13,6 +15,19 @@ import StartDialog from './components/StartDialog';
 
 
 const App=()=> {
+
+  const PROVIDER_URL='http://localhost:3000'
+
+  const connectWalletHandler=()=>{
+    //const web3= new Web3(PROVIDER_URL)
+    let provider=window.ethereum;
+
+  }
+    
+
+  
+
+
 
   /*
   This method is for initiallizing deck 
@@ -37,8 +52,7 @@ const App=()=> {
    }
  
    
- 
-
+   
   const dealingInterval=1000;
 
   const initialCardCount=2
@@ -153,9 +167,13 @@ const dealing = async (playerList)=>{
 
   return (
     <>
+    <div>
     <StartDialog
     startHandler={startHandler}
     />
+   <button onClick={connectWalletHandler}/>
+    </div>
+   
     <div 
     className={styles.table}
     style={{backgroundImage: `url(${backgroundImage})`}}
