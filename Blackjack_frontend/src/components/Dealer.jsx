@@ -2,7 +2,7 @@ import { React, useState, useEffect } from 'react';
 import Card from "./Cards"
 import styles from "../style/player.module.css";
 
-const Dealer=({cardList})=>{
+const Dealer=({cardList,isDealerTurn})=>{
     
 
     return(

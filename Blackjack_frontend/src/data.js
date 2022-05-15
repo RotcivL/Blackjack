@@ -29,6 +29,6 @@ const player1={
   playerList.push(player1)
   playerList.push(player2)
   playerList.push(player3) 
-  playerList.push(player4)
+  //playerList.push(player4)
 
   export default playerList

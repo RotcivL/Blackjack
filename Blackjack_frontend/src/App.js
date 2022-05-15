@@ -20,9 +20,7 @@ const App=()=> {
   const deckBuilder=()=>{
     const temp_deck=[]
     const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-    const types = ["C", "D", "H", "S"];
-   
-    
+    const types = ["C", "D", "H", "S"]; 
     for (let i=0;i<types.length;i++ ){
       for(let j=0;j<values.length;j++){
        temp_deck.push({value:values[j],
@@ -49,7 +47,7 @@ const App=()=> {
 
   const[playerList,setPlayerList]=useState([])
   
-  const[deck,setDeck]=useState(deckBuilder())
+  const[deck,]=useState(deckBuilder())
 
   const[dealerCardList, setDealerCardList]=useState([])
 
@@ -131,7 +129,7 @@ const dealing = async (playerList)=>{
   }
 
   const nextPlayerHandler=()=>{
-    if (turnIndex<3){
+    if (turnIndex<playerList.length-1){
     const nextIndex=turnIndex+1
     setTurnIndex(nextIndex)
     }
@@ -163,7 +161,9 @@ const dealing = async (playerList)=>{
     style={{backgroundImage: `url(${backgroundImage})`}}
     >
     <Dealer
-    cardList={dealerCardList}/>
+    cardList={dealerCardList}
+    isDealerTurn={isDealerTurn}
+    />
     
     {playerList.map((player, index)=><Player
       key={index}
