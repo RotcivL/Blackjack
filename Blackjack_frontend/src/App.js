@@ -5,6 +5,9 @@ import Player from './components/Players';
 import styles from "../src/style/table.module.css"
 import backgroundImage from "./table_background.jpeg"
 import StartDialog from './components/StartDialog';
+import Button from '@mui/material/Button';
+
+import Web3 from 'web3'
 
 
 
@@ -14,15 +17,39 @@ import StartDialog from './components/StartDialog';
 
 const App=()=> {
 
+  const PROVIDER_URL='http://localhost:3000'
+
+  const connectWalletHandler= async()=>{
+    //const web3= new Web3(PROVIDER_URL)
+    let provider=window.ethereum;
+    if(typeof provider!=="undefined"){
+      try{
+        const accounts= await provider.request({method:"eth_requestAccounts"})
+        setAccount(accounts[0])
+      }catch(err){
+        console.log("err:",err)
+      }
+       
+
+    }
+    else{
+      alert("You need to install MetaMask.")
+    }
+
+  }
+    
+
+  
+
+
+
   /*
   This method is for initiallizing deck 
   */
   const deckBuilder=()=>{
     const temp_deck=[]
     const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-    const types = ["C", "D", "H", "S"];
-   
-    
+    const types = ["C", "D", "H", "S"]; 
     for (let i=0;i<types.length;i++ ){
       for(let j=0;j<values.length;j++){
        temp_deck.push({value:values[j],
@@ -39,9 +66,10 @@ const App=()=> {
    }
  
    
- 
-
+   
   const dealingInterval=1000;
+
+  const [account,setAccount]=useState(null)
 
   const initialCardCount=2
   
@@ -49,7 +77,7 @@ const App=()=> {
 
   const[playerList,setPlayerList]=useState([])
   
-  const[deck,setDeck]=useState(deckBuilder())
+  const[deck,]=useState(deckBuilder())
 
   const[dealerCardList, setDealerCardList]=useState([])
 
@@ -131,7 +159,7 @@ const dealing = async (playerList)=>{
   }
 
   const nextPlayerHandler=()=>{
-    if (turnIndex<3){
+    if (turnIndex<playerList.length-1){
     const nextIndex=turnIndex+1
     setTurnIndex(nextIndex)
     }
@@ -155,15 +183,42 @@ const dealing = async (playerList)=>{
 
   return (
     <>
-    <StartDialog
+    <section
+    style={
+      {
+        position:"absolute",
+        marginLeft:"1800px",
+        paddingTop:"30px",
+        paddingRight:"30px"
+
+      }
+    }
+    >
+     <StartDialog
     startHandler={startHandler}
     />
+   <Button 
+   style={{ 
+    marginLeft: "auto",
+    marginBottom:"-40px" }}
+   onClick={connectWalletHandler}
+   variant="contained"
+   >{"Switch wallet"}
+   </Button>
+  
+   </section>
     <div 
     className={styles.table}
     style={{backgroundImage: `url(${backgroundImage})`}}
     >
+   <p>
+     {`this is current account:${account}`}
+   </p>
+   
     <Dealer
-    cardList={dealerCardList}/>
+    cardList={dealerCardList}
+    isDealerTurn={isDealerTurn}
+    />
     
     {playerList.map((player, index)=><Player
       key={index}
@@ -176,6 +231,7 @@ const dealing = async (playerList)=>{
       nextPlayerHandler={nextPlayerHandler}
       hitHandler={hitHandler}/>
     )}
+    
     </div>
     </>
   )

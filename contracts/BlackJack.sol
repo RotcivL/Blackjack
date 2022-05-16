@@ -147,3 +147,4 @@ contract BlackJack {
       require (msg.sender == dealer);
       _;
     }
+}
