@@ -5,6 +5,7 @@ import Player from './components/Players';
 import styles from "../src/style/table.module.css"
 import backgroundImage from "./table_background.jpeg"
 import StartDialog from './components/StartDialog';
+import Button from '@mui/material/Button';
 
 import Web3 from 'web3'
 
@@ -18,9 +19,22 @@ const App=()=> {
 
   const PROVIDER_URL='http://localhost:3000'
 
-  const connectWalletHandler=()=>{
+  const connectWalletHandler= async()=>{
     //const web3= new Web3(PROVIDER_URL)
     let provider=window.ethereum;
+    if(typeof provider!=="undefined"){
+      try{
+        const accounts= await provider.request({method:"eth_requestAccounts"})
+        setAccount(accounts[0])
+      }catch(err){
+        console.log("err:",err)
+      }
+       
+
+    }
+    else{
+      alert("You need to install MetaMask.")
+    }
 
   }
     
@@ -54,6 +68,8 @@ const App=()=> {
    
    
   const dealingInterval=1000;
+
+  const [account,setAccount]=useState(null)
 
   const initialCardCount=2
   
@@ -167,17 +183,38 @@ const dealing = async (playerList)=>{
 
   return (
     <>
-    <div>
-    <StartDialog
+    <section
+    style={
+      {
+        position:"absolute",
+        marginLeft:"1800px",
+        paddingTop:"30px",
+        paddingRight:"30px"
+
+      }
+    }
+    >
+     <StartDialog
     startHandler={startHandler}
     />
-   <button onClick={connectWalletHandler}/>
-    </div>
-   
+   <Button 
+   style={{ 
+    marginLeft: "auto",
+    marginBottom:"-40px" }}
+   onClick={connectWalletHandler}
+   variant="contained"
+   >{"Switch wallet"}
+   </Button>
+  
+   </section>
     <div 
     className={styles.table}
     style={{backgroundImage: `url(${backgroundImage})`}}
     >
+   <p>
+     {`this is current account:${account}`}
+   </p>
+   
     <Dealer
     cardList={dealerCardList}
     isDealerTurn={isDealerTurn}
@@ -194,6 +231,7 @@ const dealing = async (playerList)=>{
       nextPlayerHandler={nextPlayerHandler}
       hitHandler={hitHandler}/>
     )}
+    
     </div>
     </>
   )
