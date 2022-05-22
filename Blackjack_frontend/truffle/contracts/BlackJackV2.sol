@@ -118,6 +118,9 @@ contract BlackJackV2 {
         dealerLargerValue = dealerCardValues[0];
       }
     }
+    if (dealerLargerValue > 21) {
+      // transfer money to player
+    }
     uint[2] memory playerCardValue = getSumInHand(playerHand);
     uint playerLargerValue = 0;
     if (playerCardValue[1] > 21) {
@@ -147,7 +150,7 @@ contract BlackJackV2 {
     uint[2] memory cardValues = [uint(0), uint(0)];
     for (uint i = 0; i < hand.length; i++) {
       uint cardIndex = hand[i];
-      uint cardValue = cardIndex % 52 % 4 + 1;
+      uint cardValue = cardIndex % 52 % 13 + 1;
       if (cardValue > 10) {
         cardValues[0] += 10;
         cardValues[1] += 10;
@@ -212,6 +215,7 @@ contract BlackJackV2 {
       // transfer players balance * 2
       gameStart = false;
     }
+    // increase bet size
     // check if cardValue of dealerCard2 is == 1, if yes, insurance
     // check if cardValue of playerCard1 == playerCard2, if yes, split. This part is hard because i cant figure out a way to store multiple hands of a single player.
   }
