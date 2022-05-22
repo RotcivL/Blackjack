@@ -13,8 +13,8 @@ contract BlackJackV2 {
   uint public dealerBalance;
   uint public playerBalance;
 
-  uint[] dealerHand; // store the card indexes in dealer's hand
-  uint[] playerHand; // store the card indexes in player's hand
+  uint[] public dealerHand; // store the card indexes in dealer's hand
+  uint[] public playerHand; // store the card indexes in player's hand
 
   uint public minBet;
   uint public maxBet; // minBet and maxBet for each round, defined by dealer when he deploy the contract.

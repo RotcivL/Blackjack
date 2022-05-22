@@ -6,7 +6,7 @@ import styles from "../src/style/table.module.css"
 import backgroundImage from "./table_background.jpeg"
 import StartDialog from './components/StartDialog';
 import Button from '@mui/material/Button';
-import {initializeContract,getDealer, joinGame} from "./Web3Client";
+import {initializeContract, joinGame, getStatus, startGame} from "./Web3Client";
 
 
 
@@ -74,6 +74,19 @@ const App=()=> {
 
   const [dealer,setDealer]=useState(null)
 
+  //const [metamaskAccount,setmetamaskAccount]=useState(null)
+
+  const [dealerBal,setDealerBal]=useState(null)
+
+  const[player,setPlayer]=useState(null)
+
+  const[playerBal,setPlayerBal]=useState(null)
+
+  const[contractBal,setContractBal]=useState(null)
+
+
+
+  
   const initialCardCount=2
   
   const [isInitialStarted,setIsInitialStarted]=useState(false)
@@ -94,7 +107,18 @@ const App=()=> {
   Fetch players' data and then initiallize player list.
   When isRoundStarted truns true, each player gets their initial cards by triggering dealing method
   */
-
+  useEffect(() => {
+    async function listenMMAccount() {
+      window.ethereum.on("accountsChanged", async function() {
+        // Time to reload your interface with accounts[0]!
+        let provider=window.ethereum;
+        const accounts= await provider.request({method:"eth_requestAccounts"})
+        setAccount(accounts[0])
+        // accounts = await web3.eth.getAccounts();
+      });
+    }
+    listenMMAccount();
+  }, []);
   
   useEffect(()=>{
     const fetchPlayer= async () => {
@@ -115,18 +139,34 @@ const App=()=> {
 
 useEffect(()=>{
   connectWalletHandler()
-
+  setStatusHandler()
 },)
 
-const getDealerHandler= async ()=>{
-  const d= await getDealer()
-  //console.log(d)
-  setDealer(d)
-}
+
 
 const joinGameHandler= async ()=>{
   const result=await joinGame()
+  if(result){
+    setStatusHandler()
+  }
+
+}
+
+const startGameHandler=async()=>{
+  const result=await startGame()
   console.log(result)
+}
+
+const setStatusHandler=async()=>{
+  const statusArr=await getStatus()
+  //setmetamaskAccount(statusArr.metamask_account)
+  setDealer(statusArr[0].dealer)
+  setDealerBal(statusArr[0].dealerBal)
+  setPlayer(statusArr[0].player)
+  setPlayerBal(statusArr[0].playerBal)
+  setContractBal(statusArr[0].contractBal)
+ //console.log(statusArr[0])
+  
 
 }
 
@@ -215,8 +255,12 @@ const dealing = async (playerList)=>{
     startHandler={startHandler}
     initializeContract={initializeContract}
     dealer={dealer}
-    getDealerHandler={getDealerHandler}
+    player={player}
+    account={account}
     joinGameHandler={joinGameHandler}
+    setStatusHandler={setStatusHandler}
+    startGameHandler={startGameHandler}
+
     />
    <Button 
    style={{ 
@@ -229,7 +273,7 @@ const dealing = async (playerList)=>{
    <p>
      {`this is current account:${account}`}
    </p>
-   <p>{}</p>
+   
   
    </section>
     <div 
