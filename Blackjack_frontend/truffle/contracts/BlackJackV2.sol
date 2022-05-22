@@ -13,8 +13,9 @@ contract BlackJackV2 {
   uint public dealerBalance;
   uint public playerBalance;
 
-  uint[] public dealerHand; // store the card indexes in dealer's hand
-  uint[] public playerHand; // store the card indexes in player's hand
+  uint[] dealerHand; // store the card indexes in dealer's hand
+  uint[] playerHand; // store the card indexes in player's hand
+  uint cardDrawn;
 
   uint public minBet;
   uint public maxBet; // minBet and maxBet for each round, defined by dealer when he deploy the contract.
@@ -50,7 +51,8 @@ contract BlackJackV2 {
   // we need to ensure the random number cannot be guessed given the params
   // in keccak within a block mining round time
   function randomNumber() private view returns(uint) {
-    return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, dealer, player))) % (52 * 3);
+    uint hashCardDrawn = uint(keccak256(abi.encodePacked(block.timestamp, cardDrawn)));
+    return uint(keccak256(abi.encodePacked(hashCardDrawn, block.difficulty, block.timestamp, dealer, player))) % (52 * 3);
   }
 
 
@@ -85,6 +87,7 @@ contract BlackJackV2 {
       randomCardIndex = randomNumber() % (52 * 3);
     }
     deck[randomCardIndex] = 0;
+    cardDrawn += 1;
     return randomCardIndex;
   }
 
