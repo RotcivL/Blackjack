@@ -5,9 +5,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import { getDealer } from '../Web3Client';
 
 
-const StartDialog=({startHandler})=>{
+const StartDialog=({startHandler,initializeContract,dealer,getDealerHandler,joinGameHandler})=>{
 
 const [isOpen, setIsOpen] =useState(true);
 
@@ -23,22 +25,48 @@ const [isOpen, setIsOpen] =useState(true);
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Welcome mate!"}
+          {"Welcome"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            This is the frond end part of our black jack Dapp, the current 
-            version can perfrom deal cards and control all player's hit or 
-            stay for simulation purpose (In the completed version, current user should only have his/her own 
-            hit and stay button.) The timer function is also implemented for allowing players to decide within 15 second.
-            Lastly, the hit or stay function for dealer cannot not be implemented prior contract development.   
-          </DialogContentText>
+          {dealer!==null?
+          (<DialogContentText id="alert-dialog-description">
+            {`This game is deployed by ${dealer}`}
+          </DialogContentText>):(<DialogContentText id="alert-dialog-description">
+              {"No dealer, please initialize the contract!"}
+          </DialogContentText>)}
+          
+        <TextField
+          id="outlined-number"
+          label="bet"
+          type="number"
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
         </DialogContent>
         <DialogActions>
           <Button onClick={()=>
-          {startHandler()
-          setIsOpen(false)}} autoFocus>
-            START
+          {
+            //startHandler()
+
+            initializeContract()
+            }} autoFocus>
+            Deploy
+          </Button>
+          <Button onClick={()=>
+          {
+            //startHandler()
+            getDealerHandler()
+           
+          }} autoFocus>
+           next
+          </Button>
+          <Button onClick={()=>
+          {
+            joinGameHandler()
+           
+            }} autoFocus>
+            join
           </Button>
         </DialogActions>
       </Dialog>

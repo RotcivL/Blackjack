@@ -15,7 +15,8 @@
     "react-dom": "^18.1.0",
     "react-scripts": "4.0.3",
     "web-vitals": "^2.1.4",
-    "web3": "^1.7.3"
+    "web3": "^1.7.3",
+    "contracts":"file:./truffle/build/contracts"
   },
   "scripts": {
     "start": "react-scripts start",

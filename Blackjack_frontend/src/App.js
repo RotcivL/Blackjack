@@ -6,8 +6,9 @@ import styles from "../src/style/table.module.css"
 import backgroundImage from "./table_background.jpeg"
 import StartDialog from './components/StartDialog';
 import Button from '@mui/material/Button';
+import {initializeContract,getDealer, joinGame} from "./Web3Client";
 
-import Web3 from 'web3'
+
 
 
 
@@ -71,6 +72,8 @@ const App=()=> {
 
   const [account,setAccount]=useState(null)
 
+  const [dealer,setDealer]=useState(null)
+
   const initialCardCount=2
   
   const [isInitialStarted,setIsInitialStarted]=useState(false)
@@ -98,7 +101,6 @@ const App=()=> {
         try{
           const res= await import("./data")
           setPlayerList(res.default)
-          
           dealing(res.default)   
               
         }catch(err){
@@ -111,7 +113,22 @@ const App=()=> {
 },[isInitialStarted])
 
 
+useEffect(()=>{
+  connectWalletHandler()
 
+},)
+
+const getDealerHandler= async ()=>{
+  const d= await getDealer()
+  //console.log(d)
+  setDealer(d)
+}
+
+const joinGameHandler= async ()=>{
+  const result=await joinGame()
+  console.log(result)
+
+}
 
  
    
@@ -196,6 +213,10 @@ const dealing = async (playerList)=>{
     >
      <StartDialog
     startHandler={startHandler}
+    initializeContract={initializeContract}
+    dealer={dealer}
+    getDealerHandler={getDealerHandler}
+    joinGameHandler={joinGameHandler}
     />
    <Button 
    style={{ 
@@ -205,15 +226,17 @@ const dealing = async (playerList)=>{
    variant="contained"
    >{"Switch wallet"}
    </Button>
+   <p>
+     {`this is current account:${account}`}
+   </p>
+   <p>{}</p>
   
    </section>
     <div 
     className={styles.table}
     style={{backgroundImage: `url(${backgroundImage})`}}
     >
-   <p>
-     {`this is current account:${account}`}
-   </p>
+   
    
     <Dealer
     cardList={dealerCardList}
