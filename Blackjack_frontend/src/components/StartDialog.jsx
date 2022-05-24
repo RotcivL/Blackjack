@@ -10,11 +10,12 @@ import Typography from '@mui/material/Typography';
 //import { getDealer } from '../Web3Client';
 
 
-const StartDialog=({startHandler,initializeContract,dealer,account,player,joinGameHandler,setStatusHandler,startGameHandler,setHandHandler})=>{
+const StartDialog=({startHandler,initializeContract,dealer,account,player,joinGameHandler,setStatusHandler,startGameHandler,setHandHandler,isDealerStart})=>{
 
 const [isOpen, setIsOpen] =useState(true);
 const [isReady,setIsReady]=useState(false);
 const [user,setUser]=useState(null)
+const [isGO,setIsGo]=useState(null)
 const nullPlayer="0x0000000000000000000000000000000000000000";
 
 
@@ -32,7 +33,7 @@ useEffect(()=>{
     setIsReady(false)
   }
   
-},[dealer,account,player])
+},[dealer,account,player,isDealerStart])
 
 useEffect(()=>{
   if(account!==null&&dealer!==null){
@@ -60,6 +61,11 @@ useEffect(()=>{
 
 },[dealer,account,player])
 
+useEffect(()=>{
+  if(isDealerStart=true){
+    setIsGo(true)
+  }
+},isDealerStart)
 
 
 
@@ -108,6 +114,16 @@ useEffect(()=>{
             }} autoFocus>
             join
           </Button>}
+          {isGO&&<Button onClick={()=>
+          {
+            setHandHandler()
+            //startHandler()
+            setIsOpen(false)
+
+            }} >
+            go
+          </Button>}
+          
         </DialogActions>
       </Dialog>
     </div>

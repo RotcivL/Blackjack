@@ -6,7 +6,7 @@ import styles from "../src/style/table.module.css"
 import backgroundImage from "./table_background.jpeg"
 import StartDialog from './components/StartDialog';
 import Button from '@mui/material/Button';
-import {initializeContract, joinGame, getStatus, startGame,getHandCard,playerHitCard, getGameStart, getPlayerWin} from "./Web3Client";
+import {initializeContract, joinGame, getStatus, startGame,getHandCard,playerHitCard, getGameStart, getPlayerWin, playerStand} from "./Web3Client";
 import GameOverDialog from './components/GameOverDialog';
 
 
@@ -111,7 +111,7 @@ const App=()=> {
   
   const initialCardCount=2
   
-  const [isInitialStarted,setIsInitialStarted]=useState(false)
+  const [isDealerStart,setisDealerStart]=useState(null)
 
   const[playerList,setPlayerList]=useState([])
   
@@ -155,7 +155,12 @@ const App=()=> {
 useEffect(()=>{
   connectWalletHandler()
   setStatusHandler()
-},)
+  if(isDealerStart===true){
+    setHandHandler()
+    console.log("hook called")
+  }
+  
+},[isDealerStart,player])
 
 useEffect(()=>{
   const currentUser= async()=>{
@@ -184,7 +189,9 @@ const startGameHandler=async()=>{
   const result=await startGame()
   if(result){
     await setStatusHandler()
-    setHandHandler()
+    setisDealerStart(true)
+    
+    
     await wait(dealingInterval*4)
     const gameStart_=await getGameStart()
     const playerWin_=await getPlayerWin()
@@ -215,7 +222,6 @@ const setHandHandler=async()=>{
    const temp_dealerCardList=dealerCardList
    const dealerHand_index=handCard.dealerHand
    const playerHand_index=handCard.playerHand
-   //console.log("dhindex: ",dealerHand_index)
    const dealerHand=cardInterpreter(dealerHand_index)
    const playerHand=cardInterpreter(playerHand_index)
    const player_json={address:player_add,cardList:[],name:"goodguy",isMe:true,bet:10}
@@ -228,7 +234,7 @@ const setHandHandler=async()=>{
     setDealerCardList([...temp_dealerCardList])
     await wait(dealingInterval)
    }
-   //setIsInitialStarted(false)
+   //setisDealerStart(false)
    setTurnIndex(0)
    //console.log(dealerHand,dealerHand_index)
    
@@ -255,7 +261,7 @@ const setHandHandler=async()=>{
   */
 
   const startHandler=()=>{
-    setIsInitialStarted(true)
+    setisDealerStart(true)
   }
 
   const nextPlayerHandler=()=>{
@@ -287,6 +293,34 @@ const setHandHandler=async()=>{
 
   }
 
+  const playerStandHandler= async ()=>{
+    const result=await playerStand()
+    const temp_dealerCardList=dealerCardList
+    const oldHandCardNum=temp_dealerCardList.length
+    const handCard=await getHandCard()
+    const dealerHandCard_index=handCard.dealerHand
+    const dealerHandCard=cardInterpreter(dealerHandCard_index)
+    console.log("dealerhand: ",dealerHandCard)
+    const addedCardNum=dealerHandCard.length-oldHandCardNum
+    if(addedCardNum>0){
+      for (let i=0;i<addedCardNum;i++){
+        temp_dealerCardList.push(dealerHandCard[i+2])
+        console.log(temp_dealerCardList)
+        setDealerCardList([...temp_dealerCardList])
+        await wait(dealingInterval)
+
+      }
+    }
+    const gameStart_=await getGameStart()
+    const playerWin_=await getPlayerWin()
+
+    setGameStart(gameStart_)
+    setPlayerWin(playerWin_)
+
+    
+   
+  }
+
 
  
   
@@ -310,6 +344,7 @@ const setHandHandler=async()=>{
      <StartDialog
     startHandler={startHandler}
     initializeContract={initializeContract}
+    isDealerStart={isDealerStart}
     dealer={dealer}
     player={player}
     account={account}
@@ -317,6 +352,7 @@ const setHandHandler=async()=>{
     setStatusHandler={setStatusHandler}
     startGameHandler={startGameHandler}
     setHandHandler={setHandHandler}
+    
     
 
     />
@@ -352,7 +388,9 @@ const setHandHandler=async()=>{
       cardList={player.cardList}
       whosTurn={turnIndex}
       nextPlayerHandler={nextPlayerHandler}
-      hitHandler={hitHandler}/>
+      hitHandler={hitHandler}
+      playerStandHandler={playerStandHandler}
+      />
     )}
     
     </div>

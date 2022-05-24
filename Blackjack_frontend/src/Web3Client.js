@@ -71,13 +71,19 @@ export const startGame= async ()=>{
         return BlackJackContract.methods.startGame().send({from:accounts[0]})
     } 
 
-export const playerHitCard= async ()=>{
+export const playerStand= async ()=>{
+        if(!isInitial){
+            await initializeContract();}
+       
+        return BlackJackContract.methods.playerStand().send({from:accounts[0]})
+    }
+
+    export const playerHitCard= async ()=>{
         if(!isInitial){
             await initializeContract();}
        
         return BlackJackContract.methods.playerHitCard().send({from:accounts[0]})
     }
-
 
 export const getDealer= async ()=>{
     if(!isInitial){
@@ -104,10 +110,10 @@ export const getStatus=async()=>{
     //playerHand=await BlackJackContract.methods.getPlayerHand().call()
     
 
-    // console.log(`current player (Metamask...):${currentP}`)
-    // console.log(`player :${player}`)
+    console.log(`current player (Metamask...):${currentP}`)
+    console.log(`player :${player}`)
     // console.log(`player bal:${playerBal}`)
-    // console.log(`current dealer:${dealer}`)
+    console.log(`current dealer:${dealer}`)
     // console.log(`dealer bal:${dealerBal}`)
     // console.log(`contract bal:${contractBal}`)
 
@@ -132,7 +138,7 @@ export const getHandCard=async()=>{
     }
     dealerHand=await BlackJackContract.methods.getDealerHand().call()
     playerHand=await BlackJackContract.methods.getPlayerHand().call()
-    //console.log(dealerHand,playerHand)
+    console.log(dealerHand,playerHand)
     return ({dealerHand:dealerHand,playerHand:playerHand})
 
 
