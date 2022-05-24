@@ -7,7 +7,7 @@ const PlayerStatus=({playerPosition, playerName, isStartCount, nextPlayerHandler
 
     const[isCount,setIsCount]=useState(false)
     const[key,setKey]=useState('0')
-    const[duration,]=useState(15)
+    const[duration,]=useState(35)
 
     useEffect(()=>{
         if(isStartCount===true){

@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 //import { getDealer } from '../Web3Client';
 
 
-const StartDialog=({startHandler,initializeContract,dealer,account,player,joinGameHandler,setStatusHandler,startGameHandler})=>{
+const StartDialog=({startHandler,initializeContract,dealer,account,player,joinGameHandler,setStatusHandler,startGameHandler,setHandHandler})=>{
 
 const [isOpen, setIsOpen] =useState(true);
 const [isReady,setIsReady]=useState(false);
@@ -90,21 +90,13 @@ useEffect(()=>{
             
           </DialogContentText>
          
-          
-        {/* <TextField
-          id="outlined-number"
-          label="bet"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-        /> */}
         </DialogContent>
         <DialogActions>
           {isReady&&<Button onClick={()=>
           {
-            //startGameHandler()
-            startHandler()
+            startGameHandler()
+            //startHandler()
+            setIsOpen(false)
 
             }} >
             start game

@@ -17,6 +17,12 @@ let dealerBal;
 let player;
 let playerBal;
 let contractBal;
+//cardlist
+let playerHand
+let dealerHand
+//game state
+
+let gameStart;
 
 //const PROVIDER_URL='http://localhost:3000'
 
@@ -64,6 +70,12 @@ export const startGame= async ()=>{
         return BlackJackContract.methods.startGame().send({from:accounts[0]})
     } 
 
+export const playerHitCard= async ()=>{
+        if(!isInitial){
+            await initializeContract();}
+       
+        return BlackJackContract.methods.playerHitCard().send({from:accounts[0]})
+    }
 
 
 export const getDealer= async ()=>{
@@ -85,23 +97,54 @@ export const getStatus=async()=>{
     dealer = await BlackJackContract.methods.dealer().call()
     dealerBal = await BlackJackContract.methods.dealerBalance().call()
     contractBal = await web3.eth.getBalance(contractAddress)
+    gameStart=await BlackJackContract.methods.gameStart().call()
+    //dealerHand=await BlackJackContract.methods.getDealerHand().call()
+    //playerHand=await BlackJackContract.methods.getPlayerHand().call()
+    
 
-    console.log(`current player (Metamask...):${currentP}`)
-    console.log(`player :${player}`)
-    console.log(`player bal:${playerBal}`)
-    console.log(`current dealer:${dealer}`)
-    console.log(`dealer bal:${dealerBal}`)
-    console.log(`contract bal:${contractBal}`)
+    // console.log(`current player (Metamask...):${currentP}`)
+    // console.log(`player :${player}`)
+    // console.log(`player bal:${playerBal}`)
+    // console.log(`current dealer:${dealer}`)
+    // console.log(`dealer bal:${dealerBal}`)
+    // console.log(`contract bal:${contractBal}`)
+
+   
     statusArr.push({
         metamask_account:currentP,
         player:player,
         playerBal:playerBal,
         dealer:dealer,
         dealerBal:dealerBal,
-        contractBal:contractBal})
+        contractBal:contractBal,
+        gameStart:gameStart
+    })
     return statusArr;
 
     }
+
+export const getHandCard=async()=>{
+    if (!isInitial) {
+        await initializeContract();
+    }
+    dealerHand=await BlackJackContract.methods.getDealerHand().call()
+    playerHand=await BlackJackContract.methods.getPlayerHand().call()
+    //console.log(dealerHand,playerHand)
+    return ({dealerHand:dealerHand,playerHand:playerHand})
+
+
+}
+export const getGameStart=async()=>{
+    if (!isInitial) {
+        await initializeContract();
+    }
+   gameStart=await BlackJackContract.methods.gameStart().call()
+    
+  
+    return gameStart
+
+
+}
 
 
 

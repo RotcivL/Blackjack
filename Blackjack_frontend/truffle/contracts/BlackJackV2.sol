@@ -5,7 +5,7 @@ pragma solidity ^0.8.13;
 
 contract BlackJackV2 {
 
-  bool gameStart = false;
+  bool public gameStart = false;
 
   address public dealer;
   address public player;
@@ -229,6 +229,14 @@ contract BlackJackV2 {
   function quitGame() public onlyPlayer {
     require(gameStart == false);
     player = address(0);
+  }
+
+  function getDealerHand() external returns(uint[] memory){
+    return dealerHand;
+  }
+
+  function getPlayerHand() external returns(uint[] memory){
+    return playerHand;
   }
 
    

@@ -6,7 +6,8 @@ import styles from "../src/style/table.module.css"
 import backgroundImage from "./table_background.jpeg"
 import StartDialog from './components/StartDialog';
 import Button from '@mui/material/Button';
-import {initializeContract, joinGame, getStatus, startGame} from "./Web3Client";
+import {initializeContract, joinGame, getStatus, startGame,getHandCard,playerHitCard, getGameStart} from "./Web3Client";
+import GameOverDialog from './components/GameOverDialog';
 
 
 
@@ -65,10 +66,25 @@ const App=()=> {
   }
   return temp_deck
    }
+
+   const cardInterpreter=(cardIndexList)=>{
+     const temp_cardList=[]
+     const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+     const types = ["C", "D", "H", "S"];
+     for (let i=0;i<cardIndexList.length;i++){
+       const index=cardIndexList[i]
+       const value_index=index%52%13
+       const type_index=Math.floor(index%52/13)
+       const card={value:values[value_index],type:types[type_index]}
+       temp_cardList.push(card)
+     }
+     return temp_cardList
+
+   }
  
    
    
-  const dealingInterval=1000;
+  const dealingInterval=2000;
 
   const [account,setAccount]=useState(null)
 
@@ -83,6 +99,8 @@ const App=()=> {
   const[playerBal,setPlayerBal]=useState(null)
 
   const[contractBal,setContractBal]=useState(null)
+
+  const[gameStart,setGameStart]=useState(null)
 
 
 
@@ -101,8 +119,10 @@ const App=()=> {
 
   const[isDealerTurn,setIsDealerTurn]=useState(false)
 
+  const [isPlayerAccount,setIsPlayerAccount]=useState(null)
 
 
+  const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
   /*
   Fetch players' data and then initiallize player list.
   When isRoundStarted truns true, each player gets their initial cards by triggering dealing method
@@ -120,21 +140,7 @@ const App=()=> {
     listenMMAccount();
   }, []);
   
-  useEffect(()=>{
-    const fetchPlayer= async () => {
-        try{
-          const res= await import("./data")
-          setPlayerList(res.default)
-          dealing(res.default)   
-              
-        }catch(err){
-            console.log("err: ",err)
-        }
-
-    }
-    fetchPlayer()
-   
-},[isInitialStarted])
+  
 
 
 useEffect(()=>{
@@ -142,19 +148,28 @@ useEffect(()=>{
   setStatusHandler()
 },)
 
+useEffect(()=>{
+  connectWalletHandler()
+  setStatusHandler()
+},[isPlayerAccount])
+
 
 
 const joinGameHandler= async ()=>{
   const result=await joinGame()
   if(result){
     setStatusHandler()
+    //console.log(result)
   }
 
 }
 
 const startGameHandler=async()=>{
   const result=await startGame()
-  console.log(result)
+  if(result){
+    await setStatusHandler()
+    setHandHandler()
+  }
 }
 
 const setStatusHandler=async()=>{
@@ -165,9 +180,40 @@ const setStatusHandler=async()=>{
   setPlayer(statusArr[0].player)
   setPlayerBal(statusArr[0].playerBal)
   setContractBal(statusArr[0].contractBal)
- //console.log(statusArr[0])
+  setIsPlayerAccount(statusArr[0].player.toLowerCase()===account.toLowerCase())
+  //setGameStart(statusArr[0].gameStart)
   
 
+}
+
+const setHandHandler=async()=>{
+   const handCard=await getHandCard()
+   const player_add=player
+   //TODO parameterize bet
+   const temp_playerList=playerList
+   const temp_dealerCardList=dealerCardList
+   const dealerHand_index=handCard.dealerHand
+   const playerHand_index=handCard.playerHand
+   //console.log("dhindex: ",dealerHand_index)
+   const dealerHand=cardInterpreter(dealerHand_index)
+   const playerHand=cardInterpreter(playerHand_index)
+   const player_json={address:player_add,cardList:[],name:"goodguy",isMe:true,bet:10}
+   temp_playerList.push(player_json)
+   for (let i=0;i<2;i++){
+    temp_playerList[0].cardList.push(playerHand[i])
+    setPlayerList([...temp_playerList])
+    await wait(dealingInterval)
+    temp_dealerCardList.push(dealerHand[i])
+    setDealerCardList([...temp_dealerCardList])
+    await wait(dealingInterval)
+   }
+   //setIsInitialStarted(false)
+   setTurnIndex(0)
+   //console.log(dealerHand,dealerHand_index)
+   
+
+   //console.log(dealerCardList,playerList)
+   
 }
 
  
@@ -180,7 +226,7 @@ const setStatusHandler=async()=>{
      
     
   
-const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
 
 const dealing = async (playerList)=>{
     const temp_playerList=playerList
@@ -225,10 +271,24 @@ const dealing = async (playerList)=>{
     }
   }
 
-  const hitHandler=(index)=>{
+  const hitHandler= async (index)=>{
+    
+    const result=await playerHitCard()
     const temp_playerList=playerList
-    temp_playerList[index].cardList.push(deck.pop())
+    const temp_cardList=temp_playerList[index].cardList
+    const handCardNum=temp_cardList.length
+    const handCard=await getHandCard()
+    const playerHand_index=handCard.playerHand
+    const playerHand=cardInterpreter(playerHand_index)
+    temp_playerList[index].cardList.push(playerHand[handCardNum])
+    console.log(result)
+    console.log(playerHand)
+    console.log(handCardNum)
+    console.log(playerHand[handCardNum])
     setPlayerList([...temp_playerList])
+    const gameStart_=await getGameStart()
+    setGameStart(gameStart_)
+
   }
 
 
@@ -260,19 +320,16 @@ const dealing = async (playerList)=>{
     joinGameHandler={joinGameHandler}
     setStatusHandler={setStatusHandler}
     startGameHandler={startGameHandler}
+    setHandHandler={setHandHandler}
+    
 
     />
-   <Button 
-   style={{ 
-    marginLeft: "auto",
-    marginBottom:"-40px" }}
-   onClick={connectWalletHandler}
-   variant="contained"
-   >{"Switch wallet"}
-   </Button>
-   <p>
-     {`this is current account:${account}`}
-   </p>
+    <GameOverDialog
+    isWin_={true}
+    gameStart={gameStart}
+    bet={playerBal}
+    />
+   
    
   
    </section>
