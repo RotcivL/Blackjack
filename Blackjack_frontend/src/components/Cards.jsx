@@ -6,16 +6,16 @@ import styles from "../style/card.module.css";
 
 const ROTATE_FACTOR=9
 const MARGIN_TOP_DES_FACTOR=4
-const Card = ({index,value,type,num,isDealer,isMe})=>{
+const Card = ({index,value,type,num,isDealer,isPlayerAccount,isDealerAccount})=>{
    
-    const [error, setError] = useState(null)
+   
     const [image, setImage] = useState(null)
     //console.log(value)
 
     useEffect(()=>{
         const fetchImg= async () => {
             try{
-                if(index===0&&!isMe){
+                if(index===0&&isDealer&&isPlayerAccount){
                     const res = await import(`../cards/BACK.png`)
                     setImage(res.default) 
                 }
@@ -25,12 +25,12 @@ const Card = ({index,value,type,num,isDealer,isMe})=>{
                 }
                 
             }catch(err){
-                setError("can't find such card")
+               
             }
 
         }
         fetchImg()
-    },[value,type,index,isDealer,isMe])
+    },[value,type,index,isDealer,isPlayerAccount])
 
     
     //console.log(index)
@@ -41,7 +41,7 @@ const Card = ({index,value,type,num,isDealer,isMe})=>{
         <>
        
         <div >
-           {error==null?(<img 
+           <img 
            src={image} 
            alt="this is card"
            style={isDealer?{
@@ -54,7 +54,7 @@ const Card = ({index,value,type,num,isDealer,isMe})=>{
 
             }}
            className={styles.card}
-           />):(<p>{error}</p>)}
+           />
         </div>
         </>
     )

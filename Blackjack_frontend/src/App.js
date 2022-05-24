@@ -6,7 +6,7 @@ import styles from "../src/style/table.module.css"
 import backgroundImage from "./table_background.jpeg"
 import StartDialog from './components/StartDialog';
 import Button from '@mui/material/Button';
-import {initializeContract, joinGame, getStatus, startGame,getHandCard,playerHitCard, getGameStart} from "./Web3Client";
+import {initializeContract, joinGame, getStatus, startGame,getHandCard,playerHitCard, getGameStart, getPlayerWin} from "./Web3Client";
 import GameOverDialog from './components/GameOverDialog';
 
 
@@ -102,6 +102,10 @@ const App=()=> {
 
   const[gameStart,setGameStart]=useState(null)
 
+  const[playerWin,setPlayerWin]=useState(null)
+
+  
+
 
 
   
@@ -121,6 +125,8 @@ const App=()=> {
 
   const [isPlayerAccount,setIsPlayerAccount]=useState(null)
 
+  const [isDealerAccount,setIsDealerAccount]=useState(null)
+
 
   const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
   /*
@@ -134,6 +140,9 @@ const App=()=> {
         let provider=window.ethereum;
         const accounts= await provider.request({method:"eth_requestAccounts"})
         setAccount(accounts[0])
+       
+        
+        
         // accounts = await web3.eth.getAccounts();
       });
     }
@@ -149,17 +158,24 @@ useEffect(()=>{
 },)
 
 useEffect(()=>{
-  connectWalletHandler()
-  setStatusHandler()
-},[isPlayerAccount])
+  const currentUser= async()=>{
+    if(player!==null&&dealer!==null&&account!==null){
+   
+      setIsDealerAccount(dealer.toLowerCase()===account.toLowerCase());
+      setIsPlayerAccount(player.toLowerCase()===account.toLowerCase());
+    }
+
+  }
+  currentUser()
+},[account,player,dealer])
 
 
 
 const joinGameHandler= async ()=>{
   const result=await joinGame()
   if(result){
-    setStatusHandler()
-    //console.log(result)
+    await setStatusHandler()
+  
   }
 
 }
@@ -169,6 +185,11 @@ const startGameHandler=async()=>{
   if(result){
     await setStatusHandler()
     setHandHandler()
+    await wait(dealingInterval*4)
+    const gameStart_=await getGameStart()
+    const playerWin_=await getPlayerWin()
+    setGameStart(gameStart_)
+    setPlayerWin(playerWin_)
   }
 }
 
@@ -180,7 +201,7 @@ const setStatusHandler=async()=>{
   setPlayer(statusArr[0].player)
   setPlayerBal(statusArr[0].playerBal)
   setContractBal(statusArr[0].contractBal)
-  setIsPlayerAccount(statusArr[0].player.toLowerCase()===account.toLowerCase())
+  
   //setGameStart(statusArr[0].gameStart)
   
 
@@ -228,31 +249,7 @@ const setHandHandler=async()=>{
   
 
 
-const dealing = async (playerList)=>{
-    const temp_playerList=playerList
-    const temp_dealerCardList=dealerCardList
-    if(isInitialStarted!==true){
-      return
-    }
-    else{
-      for (let i=0; i <initialCardCount; i++ ){
-        for (let j=0;j<temp_playerList.length;j++){
-          await wait(dealingInterval)
-          temp_playerList[j].cardList.push(deck.pop())
-          setPlayerList([...temp_playerList])
-      }
-      await wait(dealingInterval)
-      temp_dealerCardList.push(deck.pop())
-      setDealerCardList([...temp_dealerCardList])
-      }
 
-    }
-    setIsInitialStarted(false)
-    setTurnIndex(0)
-    
-    
-    
-  }
 /*
   Start dealing cards.
   */
@@ -281,13 +278,12 @@ const dealing = async (playerList)=>{
     const playerHand_index=handCard.playerHand
     const playerHand=cardInterpreter(playerHand_index)
     temp_playerList[index].cardList.push(playerHand[handCardNum])
-    console.log(result)
-    console.log(playerHand)
-    console.log(handCardNum)
-    console.log(playerHand[handCardNum])
+   
     setPlayerList([...temp_playerList])
     const gameStart_=await getGameStart()
+    const playerWin_=await getPlayerWin()
     setGameStart(gameStart_)
+    setPlayerWin(playerWin_)
 
   }
 
@@ -325,9 +321,9 @@ const dealing = async (playerList)=>{
 
     />
     <GameOverDialog
-    isWin_={true}
     gameStart={gameStart}
     bet={playerBal}
+    playerWin={playerWin}
     />
    
    
@@ -342,13 +338,16 @@ const dealing = async (playerList)=>{
     <Dealer
     cardList={dealerCardList}
     isDealerTurn={isDealerTurn}
+    isDealerAccount={isDealerAccount}
+    isPlayerAccount={isPlayerAccount}
     />
     
     {playerList.map((player, index)=><Player
       key={index}
       playerIndex={index}
       name={player.name}
-      isMe={player.isMe}
+      isDealerAccount={isDealerAccount}
+      isPlayerAccount={isPlayerAccount}
       bet={player.bet}
       cardList={player.cardList}
       whosTurn={turnIndex}

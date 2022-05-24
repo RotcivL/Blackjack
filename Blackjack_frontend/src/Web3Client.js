@@ -23,6 +23,7 @@ let dealerHand
 //game state
 
 let gameStart;
+let playerWin;
 
 //const PROVIDER_URL='http://localhost:3000'
 
@@ -98,6 +99,7 @@ export const getStatus=async()=>{
     dealerBal = await BlackJackContract.methods.dealerBalance().call()
     contractBal = await web3.eth.getBalance(contractAddress)
     gameStart=await BlackJackContract.methods.gameStart().call()
+    playerWin=await BlackJackContract.methods.playerWin().call()
     //dealerHand=await BlackJackContract.methods.getDealerHand().call()
     //playerHand=await BlackJackContract.methods.getPlayerHand().call()
     
@@ -117,7 +119,8 @@ export const getStatus=async()=>{
         dealer:dealer,
         dealerBal:dealerBal,
         contractBal:contractBal,
-        gameStart:gameStart
+        gameStart:gameStart,
+        playerWin:playerWin
     })
     return statusArr;
 
@@ -146,6 +149,17 @@ export const getGameStart=async()=>{
 
 }
 
+export const getPlayerWin=async()=>{
+    if (!isInitial) {
+        await initializeContract();
+    }
+    playerWin=await BlackJackContract.methods.playerWin().call()
+    
+  
+    return playerWin
+
+
+}
 
 
     

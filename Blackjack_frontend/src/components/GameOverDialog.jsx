@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-const GameOverDialog=({gameStart,bet,isWin_})=>{
+const GameOverDialog=({gameStart,bet,playerWin})=>{
 
     const [isWin,setIsWin]=useState(null)
     const [isOpen, setIsOpen] =useState(false);
@@ -16,7 +16,7 @@ const GameOverDialog=({gameStart,bet,isWin_})=>{
     useEffect(()=>{
         if(gameStart===false){
             setIsOpen(true)
-            setIsWin(isWin_)
+            setIsWin(playerWin)
         }
 
     },[gameStart])

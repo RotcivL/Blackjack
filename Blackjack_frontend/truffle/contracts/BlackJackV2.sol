@@ -6,6 +6,7 @@ pragma solidity ^0.8.13;
 contract BlackJackV2 {
 
   bool public gameStart = false;
+  bool public playerWin = false;
 
   address public dealer;
   address public player;
@@ -100,6 +101,7 @@ contract BlackJackV2 {
     if (check21(playerCardValues) == true) {
       // transfer the balance to the player
       gameStart = false;
+      playerWin = true;
     }
     if (checkOver21(playerCardValues) == true) {
       // transfer the balance to the dealer
@@ -122,6 +124,7 @@ contract BlackJackV2 {
       }
     }
     if (dealerLargerValue > 21) {
+      playerWin = true;
       // transfer money to player
     }
     uint[2] memory playerCardValue = getSumInHand(playerHand);
@@ -134,6 +137,7 @@ contract BlackJackV2 {
     if (dealerLargerValue >= playerLargerValue) {
       // deduct player balance, add to dealer's balance;
     } else {
+      playerWin = true;
       // transfer money to player, same amount as player's balance
     }
     gameStart = false;
@@ -217,6 +221,7 @@ contract BlackJackV2 {
     if (check21(playerCardValues) == true) {
       // transfer players balance * 2
       gameStart = false;
+      playerWin = true;
     }
     // increase bet size
     // check if cardValue of dealerCard2 is == 1, if yes, insurance
