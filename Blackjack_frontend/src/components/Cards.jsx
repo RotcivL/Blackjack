@@ -43,7 +43,7 @@ const Card = ({index,value,type,num,isDealer,isPlayerAccount,isDealerAccount})=>
         <div >
            <img 
            src={image} 
-           alt="this is card"
+           alt=" "
            style={isDealer?{
             marginTop:"490px",
             padding:"4px"
