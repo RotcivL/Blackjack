@@ -66,7 +66,7 @@ contract BlackJackV2 {
     require (player == address(0));
     require (msg.value >= minBet && msg.value <= maxBet);
     require (msg.value % 10 == 0);
-    require (dealerBalance >= msg.value);
+    require (dealerBalance >= (msg.value*25)/10);
     player = msg.sender;
     playerBalance += msg.value;
 
@@ -130,6 +130,8 @@ contract BlackJackV2 {
     }
     if (dealerLargerValue > 21) {
       playerWin = true;
+      dealerBalance -= playerBalance;
+      playerBalance *= 2;      
       // transfer money to player
     }
     uint[2] memory playerCardValue = getSumInHand(playerHand);
@@ -231,6 +233,9 @@ contract BlackJackV2 {
       // transfer players balance * 2
       gameStart = false;
       playerWin = true;
+      uint winnings = (playerBalance * 25) / 10;
+      dealerBalance -= winnings;
+      playerBalance += winnings;
     }
     // increase bet size
     // check if cardValue of dealerCard2 is == 1, if yes, insurance
