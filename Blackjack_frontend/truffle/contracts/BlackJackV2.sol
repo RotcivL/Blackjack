@@ -66,6 +66,7 @@ contract BlackJackV2 {
     require (player == address(0));
     require (msg.value >= minBet && msg.value <= maxBet);
     require (msg.value % 10 == 0);
+    require (dealerBalance >= msg.value);
     player = msg.sender;
     playerBalance += msg.value;
 
@@ -102,10 +103,14 @@ contract BlackJackV2 {
       // transfer the balance to the player
       gameStart = false;
       playerWin = true;
+      dealerBalance -= playerBalance;
+      playerBalance *= 2;
     }
     if (checkOver21(playerCardValues) == true) {
       // transfer the balance to the dealer
       gameStart = false;
+      dealerBalance += playerBalance;
+      playerBalance = 0;
     }
   }
 
@@ -136,9 +141,13 @@ contract BlackJackV2 {
     }
     if (dealerLargerValue >= playerLargerValue) {
       // deduct player balance, add to dealer's balance;
+      dealerBalance += playerBalance;
+      playerBalance = 0;
     } else {
       playerWin = true;
       // transfer money to player, same amount as player's balance
+      dealerBalance -= playerBalance;
+      playerBalance *= 2;
     }
     gameStart = false;
   }
@@ -228,19 +237,32 @@ contract BlackJackV2 {
     // check if cardValue of playerCard1 == playerCard2, if yes, split. This part is hard because i cant figure out a way to store multiple hands of a single player.
   }
 
-
+  function withdraw() public {
+    require (msg.sender == player || msg.sender == dealer);
+    uint amount;
+    if (msg.sender == player) {
+      amount = playerBalance;
+      playerBalance = 0;
+    } else {
+      amount = dealerBalance;
+      dealerBalance = 0;
+    }
+    (bool sent, ) = msg.sender.call{value: amount}("");
+    require (sent);
+  }
   // a player can only quit a game if the game is not on.
   // CALLABLE ***
   function quitGame() public onlyPlayer {
     require(gameStart == false);
+    playerWin = false;
     player = address(0);
   }
 
-  function getDealerHand() external returns(uint[] memory){
+  function getDealerHand() external view returns(uint[] memory){
     return dealerHand;
   }
 
-  function getPlayerHand() external returns(uint[] memory){
+  function getPlayerHand() external view returns(uint[] memory){
     return playerHand;
   }
 
