@@ -128,6 +128,8 @@ const App=()=> {
   const [isDealerAccount,setIsDealerAccount]=useState(null)
 
 
+
+
   const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
   /*
   Fetch players' data and then initiallize player list.
@@ -155,9 +157,9 @@ const App=()=> {
 useEffect(()=>{
   connectWalletHandler()
   setStatusHandler()
-  if(isDealerStart===true){
+  if(isDealerStart){
     setHandHandler()
-    console.log("hook called")
+    //console.log("hook called")
   }
   
 },[isDealerStart,player])
@@ -189,14 +191,13 @@ const startGameHandler=async()=>{
   const result=await startGame()
   if(result){
     await setStatusHandler()
-    setisDealerStart(true)
-    
-    
+   
     await wait(dealingInterval*4)
     const gameStart_=await getGameStart()
     const playerWin_=await getPlayerWin()
     setGameStart(gameStart_)
     setPlayerWin(playerWin_)
+    
   }
 }
 
@@ -217,11 +218,14 @@ const setStatusHandler=async()=>{
 const setHandHandler=async()=>{
    const handCard=await getHandCard()
    const player_add=player
-   //TODO parameterize bet
+  
    const temp_playerList=playerList
    const temp_dealerCardList=dealerCardList
    const dealerHand_index=handCard.dealerHand
    const playerHand_index=handCard.playerHand
+   if(dealerHand_index==null||playerHand_index==null){
+     return
+   }
    const dealerHand=cardInterpreter(dealerHand_index)
    const playerHand=cardInterpreter(playerHand_index)
    const player_json={address:player_add,cardList:[],name:"goodguy",isMe:true,bet:10}
@@ -260,7 +264,7 @@ const setHandHandler=async()=>{
   Start dealing cards.
   */
 
-  const startHandler=()=>{
+  const setisDealerStartHandler=()=>{
     setisDealerStart(true)
   }
 
@@ -300,7 +304,7 @@ const setHandHandler=async()=>{
     const handCard=await getHandCard()
     const dealerHandCard_index=handCard.dealerHand
     const dealerHandCard=cardInterpreter(dealerHandCard_index)
-    console.log("dealerhand: ",dealerHandCard)
+    //console.log("dealerhand: ",dealerHandCard)
     const addedCardNum=dealerHandCard.length-oldHandCardNum
     if(addedCardNum>0){
       for (let i=0;i<addedCardNum;i++){
@@ -342,7 +346,7 @@ const setHandHandler=async()=>{
     }
     >
      <StartDialog
-    startHandler={startHandler}
+    setisDealerStartHandler={setisDealerStartHandler}
     initializeContract={initializeContract}
     isDealerStart={isDealerStart}
     dealer={dealer}

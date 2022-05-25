@@ -10,12 +10,12 @@ import Typography from '@mui/material/Typography';
 //import { getDealer } from '../Web3Client';
 
 
-const StartDialog=({startHandler,initializeContract,dealer,account,player,joinGameHandler,setStatusHandler,startGameHandler,setHandHandler,isDealerStart})=>{
+const StartDialog=({startHandler,isDealerStart,dealer,account,player,joinGameHandler,setStatusHandler,startGameHandler,setHandHandler,setisDealerStartHandler})=>{
 
 const [isOpen, setIsOpen] =useState(true);
 const [isReady,setIsReady]=useState(false);
 const [user,setUser]=useState(null)
-const [isGO,setIsGo]=useState(null)
+
 const nullPlayer="0x0000000000000000000000000000000000000000";
 
 
@@ -33,7 +33,7 @@ useEffect(()=>{
     setIsReady(false)
   }
   
-},[dealer,account,player,isDealerStart])
+},[dealer,account,player])
 
 useEffect(()=>{
   if(account!==null&&dealer!==null){
@@ -61,11 +61,7 @@ useEffect(()=>{
 
 },[dealer,account,player])
 
-useEffect(()=>{
-  if(isDealerStart=true){
-    setIsGo(true)
-  }
-},isDealerStart)
+
 
 
 
@@ -103,21 +99,22 @@ useEffect(()=>{
             startGameHandler()
             //startHandler()
             setIsOpen(false)
+            setisDealerStartHandler()
+            console.log(isDealerStart)
 
             }} >
             start game
           </Button>}
           
-          {user==null&&<Button onClick={()=>
+          {user===null&&<Button onClick={()=>
           {
             joinGameHandler()
-            }} autoFocus>
+            }} >
             join
           </Button>}
-          {isGO&&<Button onClick={()=>
+          {user===1&&<Button onClick={()=>
           {
             setHandHandler()
-            //startHandler()
             setIsOpen(false)
 
             }} >
