@@ -136,9 +136,11 @@ contract BlackJackV2 {
       if (dealerCardValues[1] > 21) {
         dealerLargerValue = dealerCardValues[0];
       }
+      
     }
     if (dealerLargerValue > 21) {
       playerWin = true;
+      
       dealerBalance -= playerBalance;
       playerBalance *= 2;      
       // transfer money to player

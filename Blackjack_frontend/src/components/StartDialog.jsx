@@ -10,11 +10,13 @@ import Typography from '@mui/material/Typography';
 //import { getDealer } from '../Web3Client';
 
 
-const StartDialog=({startHandler,isDealerStart,dealer,account,player,joinGameHandler,setStatusHandler,startGameHandler,setHandHandler,setisDealerStartHandler})=>{
+const StartDialog=({startHandler,isDealerStart,dealer,account,player,joinGameHandler,setStatusHandler,startGameHandler,setHandHandler,isPlayerJoin})=>{
 
 const [isOpen, setIsOpen] =useState(true);
 const [isReady,setIsReady]=useState(false);
-const [user,setUser]=useState(null)
+const [user,setUser]=useState(null);
+const [isGO,setIsGO]=useState(null);
+const [isJoin,setIsJoin]=useState(null)
 
 const nullPlayer="0x0000000000000000000000000000000000000000";
 
@@ -63,6 +65,18 @@ useEffect(()=>{
 
 
 
+  useEffect(()=>{
+    setIsGO(isDealerStart)
+
+  },[isDealerStart])
+
+  useEffect(()=>{
+    setIsJoin(isPlayerJoin)
+
+  },[isPlayerJoin])
+
+
+
 
 
 
@@ -87,20 +101,19 @@ useEffect(()=>{
            {user===null&&(<div><Typography>{`Dealer is ${dealer}`}</Typography><Typography>{`This is your current address: ${account}`}</Typography></div>)}
             {user===0&&(<Typography>{"Waiting for player joing game..."}</Typography>)}
             {user===1&&(<Typography>{"Waiting for dealer starting game..."}</Typography>)}
-            {user===-1&&(<Typography>{`Player ${player} is waiting...` }</Typography>)}
+            {(isJoin&&user===-1)&&(<Typography>{`Player ${player} is waiting...` }</Typography>)}
 
             
           </DialogContentText>
          
         </DialogContent>
         <DialogActions>
-          {isReady&&<Button onClick={()=>
+          {(isJoin&&user===-1)&&<Button onClick={()=>
           {
             startGameHandler()
-            //startHandler()
             setIsOpen(false)
-            setisDealerStartHandler()
-            console.log(isDealerStart)
+            //setisDealerStartHandler()
+            //console.log(isDealerStart)
 
             }} >
             start game
@@ -112,7 +125,7 @@ useEffect(()=>{
             }} >
             join
           </Button>}
-          {user===1&&<Button onClick={()=>
+          {isGO&&<Button onClick={()=>
           {
             setHandHandler()
             setIsOpen(false)

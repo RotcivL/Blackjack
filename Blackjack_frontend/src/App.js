@@ -6,7 +6,7 @@ import styles from "../src/style/table.module.css"
 import backgroundImage from "./table_background.jpeg"
 import StartDialog from './components/StartDialog';
 import Button from '@mui/material/Button';
-import {initializeContract, joinGame, getStatus, startGame,getHandCard,playerHitCard, getGameStart, getPlayerWin, playerStand} from "./Web3Client";
+import {initializeContract, joinGame, getStatus, startGame,getHandCard,playerHitCard, getGameStart, getPlayerWin, playerStand,startGameEventListener,joinGameEventListener,playerHitEventListener, playerStandEventListener,withdraw} from "./Web3Client";
 import GameOverDialog from './components/GameOverDialog';
 
 
@@ -45,27 +45,7 @@ const App=()=> {
 
 
 
-  /*
-  This method is for initiallizing deck 
-  */
-  const deckBuilder=()=>{
-    const temp_deck=[]
-    const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-    const types = ["C", "D", "H", "S"]; 
-    for (let i=0;i<types.length;i++ ){
-      for(let j=0;j<values.length;j++){
-       temp_deck.push({value:values[j],
-                   type:types[i]})
-      }
-    }
-    for (let i = temp_deck.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      let temp = temp_deck[i];
-      temp_deck[i] = temp_deck[j];
-      temp_deck[j] = temp;
-  }
-  return temp_deck
-   }
+  
 
    const cardInterpreter=(cardIndexList)=>{
      const temp_cardList=[]
@@ -85,6 +65,8 @@ const App=()=> {
    
    
   const dealingInterval=2000;
+
+  const nullPlayer="0x0000000000000000000000000000000000000000";
 
   const [account,setAccount]=useState(null)
 
@@ -111,11 +93,11 @@ const App=()=> {
   
   const initialCardCount=2
   
-  const [isDealerStart,setisDealerStart]=useState(null)
+  const [isDealerStart,setisDealerStart]=useState(false)
 
   const[playerList,setPlayerList]=useState([])
   
-  const[deck,]=useState(deckBuilder())
+  //const[deck,]=useState(deckBuilder())
 
   const[dealerCardList, setDealerCardList]=useState([])
 
@@ -127,6 +109,18 @@ const App=()=> {
 
   const [isDealerAccount,setIsDealerAccount]=useState(null)
 
+  const[isPlayerJoin,setIsPlayerJoin]=useState(null)
+
+  const [time, setTime] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(Date.now()), 1000);
+    return () => {
+      clearInterval(interval);
+      
+    };
+    
+  }, []);
 
 
 
@@ -157,10 +151,6 @@ const App=()=> {
 useEffect(()=>{
   connectWalletHandler()
   setStatusHandler()
-  if(isDealerStart){
-    setHandHandler()
-    //console.log("hook called")
-  }
   
 },[isDealerStart,player])
 
@@ -178,6 +168,8 @@ useEffect(()=>{
 
 
 
+
+
 const joinGameHandler= async ()=>{
   const result=await joinGame()
   if(result){
@@ -191,6 +183,8 @@ const startGameHandler=async()=>{
   const result=await startGame()
   if(result){
     await setStatusHandler()
+    await setHandHandler()
+    //setisDealerStart(true)
    
     await wait(dealingInterval*4)
     const gameStart_=await getGameStart()
@@ -238,12 +232,12 @@ const setHandHandler=async()=>{
     setDealerCardList([...temp_dealerCardList])
     await wait(dealingInterval)
    }
+
    //setisDealerStart(false)
    setTurnIndex(0)
    //console.log(dealerHand,dealerHand_index)
-   
 
-   //console.log(dealerCardList,playerList)
+   console.log(dealerCardList,playerList)
    
 }
 
@@ -299,6 +293,7 @@ const setHandHandler=async()=>{
 
   const playerStandHandler= async ()=>{
     const result=await playerStand()
+    //console.log("player stand: ",result)
     const temp_dealerCardList=dealerCardList
     const oldHandCardNum=temp_dealerCardList.length
     const handCard=await getHandCard()
@@ -325,9 +320,86 @@ const setHandHandler=async()=>{
    
   }
 
-
+  const withdrawHandler= async ()=>{
+    const result=await withdraw()
+    if(result){
+      console.log("successfully withdraw ")
+    }
+  }
  
+
+  const startGameListener= async ()=>{
+    const results=await startGameEventListener()
+    if(results){
+      const _gameStart=results.returnValues._gameStart
+      setisDealerStart(_gameStart)
+      console.log("test gamestart listener",results.returnValues._gameStart)
+    }
+    // else{
+    //   console.log("invalid res")
+    // }
+    
+  }
+
+  startGameListener();
+
+  const joinGameListener= async ()=>{
+    const results=await joinGameEventListener()
+    if(results){
+      const _player=results.returnValues._player
+      setPlayer(_player)
+      setIsPlayerJoin(true)
+      console.log("test joingame listener",results.returnValues._player)
+    }
+    // else{
+    //   console.log("invalid res")
+    // }
+    
+  }
+
+  joinGameListener();
   
+  const playerHitCardListener= async ()=>{
+    const results=await playerHitEventListener()
+    if(results){
+      const temp_playerList=playerList
+      const playerHand_index=results.returnValues._playerHand
+      const playerHand=cardInterpreter(playerHand_index)
+      //const temp_cardList=temp_playerList[0].cardList
+      //const handCardNum=temp_cardList.length-1
+      temp_playerList[0].cardList=playerHand
+      
+      setPlayerList([...temp_playerList])
+      //console.log("test handcard listener",results.returnValues._playerHand,playerHand,temp_playerList)
+    }
+    // else{
+    //   console.log("invalid res")
+    // }
+    
+  }
+  
+  playerHitCardListener();
+
+  const playerDealerCardListener= async ()=>{
+    const results=await playerStandEventListener()
+    if(results){
+      //const temp_dealerList=dealerCardList
+      const dealerHand_index=results.returnValues._dealerHand
+      const dealerHand=cardInterpreter(dealerHand_index)
+      //const temp_cardList=temp_playerList[0].cardList
+      //const handCardNum=temp_cardList.length-1
+      //temp_dealerList=dealerHand
+      
+      setDealerCardList([...dealerHand])
+      //console.log("test standcard listener",temp_dealerList,dealerHand)
+    }
+    // else{
+    //   console.log("invalid res")
+    // }
+    
+  }
+  
+  playerDealerCardListener();
 
 
   
@@ -348,6 +420,7 @@ const setHandHandler=async()=>{
      <StartDialog
     setisDealerStartHandler={setisDealerStartHandler}
     initializeContract={initializeContract}
+    isPlayerJoin={isPlayerJoin}
     isDealerStart={isDealerStart}
     dealer={dealer}
     player={player}
@@ -356,14 +429,18 @@ const setHandHandler=async()=>{
     setStatusHandler={setStatusHandler}
     startGameHandler={startGameHandler}
     setHandHandler={setHandHandler}
+    startGameEventListener={startGameEventListener}
+    joinGameEventListener={joinGameEventListener}
     
     
 
     />
     <GameOverDialog
     gameStart={gameStart}
-    bet={playerBal}
+    withdrawHandler={withdrawHandler}
     playerWin={playerWin}
+    isPlayerAccount={isPlayerAccount}
+    isDealerAccount={isDealerAccount}
     />
    
    

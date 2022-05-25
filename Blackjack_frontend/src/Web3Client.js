@@ -78,12 +78,20 @@ export const playerStand= async ()=>{
         return BlackJackContract.methods.playerStand().send({from:accounts[0]})
     }
 
-    export const playerHitCard= async ()=>{
+export const playerHitCard= async ()=>{
         if(!isInitial){
             await initializeContract();}
        
         return BlackJackContract.methods.playerHitCard().send({from:accounts[0]})
     }
+
+export const withdraw= async ()=>{
+        if(!isInitial){
+            await initializeContract();}
+       
+        return BlackJackContract.methods.withdraw().send({from:accounts[0]})
+    }
+
 
 export const getDealer= async ()=>{
     if(!isInitial){
@@ -110,10 +118,10 @@ export const getStatus=async()=>{
     //playerHand=await BlackJackContract.methods.getPlayerHand().call()
     
 
-    console.log(`current player (Metamask...):${currentP}`)
-    console.log(`player :${player}`)
+    //console.log(`current player (Metamask...):${currentP}`)
+    //console.log(`player :${player}`)
     // console.log(`player bal:${playerBal}`)
-    console.log(`current dealer:${dealer}`)
+    //console.log(`current dealer:${dealer}`)
     // console.log(`dealer bal:${dealerBal}`)
     // console.log(`contract bal:${contractBal}`)
 
@@ -166,6 +174,70 @@ export const getPlayerWin=async()=>{
 
 
 }
+
+export const startGameEventListener=async()=>{
+    if (!isInitial) {
+        await initializeContract();
+    }
+    const res=await BlackJackContract.getPastEvents("StartGame",{})
+    if(res[0]!=="undefined"){
+        //console.log("what is this",res[0])
+        return res[0]
+    }
+    else{
+        return false
+    }
+    
+}
+
+export const joinGameEventListener=async()=>{
+    if (!isInitial) {
+        await initializeContract();
+    }
+    const res=await BlackJackContract.getPastEvents("JoinGame",{})
+    if(res[0]!=="undefined"){
+        //console.log("what is this",res[0])
+        return res[0]
+    }
+    else{
+        return false
+    }
+    
+}
+
+export const playerHitEventListener=async()=>{
+    if (!isInitial) {
+        await initializeContract();
+    }
+    const res=await BlackJackContract.getPastEvents("PlayerHit",{})
+    if(res[0]!=="undefined"){
+        //console.log("what is this",res[0])
+        return res[0]
+    }
+    else{
+        return false
+    }
+    
+}
+
+export const playerStandEventListener=async()=>{
+    if (!isInitial) {
+        await initializeContract();
+    }
+    const res=await BlackJackContract.getPastEvents("PlayerStand",{})
+    if(res[0]!=="undefined"){
+        //console.log("what is this",res[0])
+        return res[0]
+    }
+    else{
+        return false
+    }
+    
+}
+
+
+
+
 
 
     

@@ -2,12 +2,13 @@ import { React, useState, useEffect } from 'react';
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import styles from "../style/timer.module.css";
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 
-const PlayerStatus = ({ playerPosition, playerName, isStartCount, nextPlayerHandler, hitHandler, playerIndex, playerStandHandler }) => {
+const PlayerStatus = ({ playerPosition, playerName, isStartCount, nextPlayerHandler, hitHandler, playerIndex, playerStandHandler,isPlayerAccount }) => {
 
     const [isCount, setIsCount] = useState(false)
     const [key, setKey] = useState('0')
-    const [duration,] = useState(35)
+    const [duration,] = useState(200)
 
     useEffect(() => {
         if (isStartCount === true) {
@@ -50,21 +51,22 @@ const PlayerStatus = ({ playerPosition, playerName, isStartCount, nextPlayerHand
                 colorsTime={[15, 10, 5, 0]}>
                 {() => <Avatar{...abbreviationAvatar(playerName)} />}
             </CountdownCircleTimer>
-            <button onClick={() => {
+            {isPlayerAccount&&(
+            <div><Button onClick={() => {
                 hitHandler(playerIndex)
                 setKey((preKey) => preKey + 1)
             }}
                 disabled={!isCount}
-            >{"hit"}</button>
+            >{"hit"}</Button>
 
-            <button onClick={() => {
+            <Button onClick={() => {
                 playerStandHandler()
                 nextPlayerHandler()
                 setKey((preKey) => preKey + 1)
                 setIsCount(false)
             }}
                 disabled={!isCount}
-            >{"stand"}</button>
+            >{"stand"}</Button></div>)}
         </div>
 
     )

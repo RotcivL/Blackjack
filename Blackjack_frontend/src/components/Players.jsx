@@ -57,6 +57,7 @@ const Player=({playerIndex,name,cardList,isPlayerAccount,isDealerAccount,whosTur
          playerIndex={playerIndex}
          hitHandler={hitHandler}
          playerStandHandler={playerStandHandler}
+         isPlayerAccount={isPlayerAccount}
          />
           
         <div className={styles.cardContainer}

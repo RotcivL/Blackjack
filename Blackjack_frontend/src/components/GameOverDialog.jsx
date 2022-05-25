@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-const GameOverDialog=({gameStart,bet,playerWin})=>{
+const GameOverDialog=({gameStart,playerWin,isDealerAccount,isPlayerAccount,withdrawHandler})=>{
 
     const [isWin,setIsWin]=useState(null)
     const [isOpen, setIsOpen] =useState(false);
@@ -19,7 +19,7 @@ const GameOverDialog=({gameStart,bet,playerWin})=>{
             setIsWin(playerWin)
         }
 
-    },[gameStart])
+    },[gameStart,playerWin])
 
 
     return (
@@ -32,20 +32,27 @@ const GameOverDialog=({gameStart,bet,playerWin})=>{
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {isWin?(<Typography>{"Congrats player"}</Typography>):(<Typography>{"Game over"}</Typography>)}
+            {(isWin&&isPlayerAccount)?(<Typography>{"Congrats player"}</Typography>):(<Typography>{"Game over"}</Typography>)}
             
           </DialogTitle>
           <DialogContent>
             
             <DialogContentText id="alert-dialog-description" >
-             {isWin?(<Typography>{`You have won ${bet}!` }</Typography>):(<Typography>{`You have lost ${bet}!` }</Typography>)}
+             {(isWin&&isPlayerAccount)?(<Typography>{`You have won!` }</Typography>):(<Typography>{`You have lost!` }</Typography>)}
   
               
             </DialogContentText>
            
           </DialogContent>
           <DialogActions>
-            
+          {<Button onClick={()=>
+          {
+            withdrawHandler()
+            setIsOpen(false)
+
+            }} >
+            withdraw
+          </Button>}
           </DialogActions>
         </Dialog>
       </div>
