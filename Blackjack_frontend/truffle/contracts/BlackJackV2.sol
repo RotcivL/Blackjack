@@ -26,6 +26,12 @@ contract BlackJackV2 {
   // this is to store whether a specifc card still exists.
   uint[] deck = new uint[](52*3);
 
+  //events
+  event JoinGame(address _player);
+  event StartGame(bool _gameStart);
+  event PlayerHit(uint[] _playerHand, uint[] _dealerHand);
+  event PlayerStand(uint[] _playerHand, uint[] _dealerHand);
+
   // CONSTRUCTOR
   constructor(uint _minBet, uint _maxBet) payable {
 
@@ -69,6 +75,7 @@ contract BlackJackV2 {
     require (dealerBalance >= (msg.value*25)/10);
     player = msg.sender;
     playerBalance += msg.value;
+    emit JoinGame(player);
 
   }
 
@@ -112,6 +119,8 @@ contract BlackJackV2 {
       dealerBalance += playerBalance;
       playerBalance = 0;
     }
+
+    emit PlayerHit(playerHand, dealerHand);
   }
 
   // *** CALLABLE
@@ -152,6 +161,7 @@ contract BlackJackV2 {
       playerBalance *= 2;
     }
     gameStart = false;
+    emit PlayerStand(playerHand, dealerHand);
   }
 
 
@@ -226,6 +236,8 @@ contract BlackJackV2 {
     playerHand.push(playerCard2);
     uint dealerCard2 = hitCard();
     dealerHand.push(dealerCard2);
+
+    emit StartGame(gameStart);
 
     // check if cardValue of player is == 21
     uint[2] memory playerCardValues = getSumInHand(playerHand);
