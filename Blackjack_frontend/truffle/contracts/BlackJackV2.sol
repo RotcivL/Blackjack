@@ -141,7 +141,9 @@ contract BlackJackV2 {
     if (dealerLargerValue > 21) {
       playerWin = true;
       dealerBalance -= playerBalance;
-      playerBalance *= 2;      
+      playerBalance *= 2;
+      emit PlayerStand(playerHand, dealerHand, dealerBalance,playerBalance,gameStart,playerWin);
+      return;       
       // transfer money to player
     }
     uint[2] memory playerCardValue = getSumInHand(playerHand);
