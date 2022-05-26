@@ -85,7 +85,7 @@ useEffect(()=>{
     <div>
       <Dialog
         open={isOpen}
-        onClose={()=>{setIsOpen(false)}}
+        //onClose={()=>{setIsOpen(false)}}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >

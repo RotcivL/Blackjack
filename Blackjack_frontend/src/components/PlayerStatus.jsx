@@ -4,7 +4,7 @@ import styles from "../style/timer.module.css";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 
-const PlayerStatus = ({ playerPosition, playerName, isStartCount, nextPlayerHandler, hitHandler, playerIndex, playerStandHandler,isPlayerAccount }) => {
+const PlayerStatus = ({ playerPosition, playerName, isStartCount, nextPlayerHandler, hitHandler, playerIndex, playerStandHandler,isPlayerAccount,isDealerRevealHandler }) => {
 
     const [isCount, setIsCount] = useState(false)
     const [key, setKey] = useState('0')
@@ -54,6 +54,7 @@ const PlayerStatus = ({ playerPosition, playerName, isStartCount, nextPlayerHand
             {isPlayerAccount&&(
             <div><Button onClick={() => {
                 hitHandler(playerIndex)
+                
                 setKey((preKey) => preKey + 1)
             }}
                 disabled={!isCount}
@@ -64,6 +65,7 @@ const PlayerStatus = ({ playerPosition, playerName, isStartCount, nextPlayerHand
                 nextPlayerHandler()
                 setKey((preKey) => preKey + 1)
                 setIsCount(false)
+                isDealerRevealHandler()
             }}
                 disabled={!isCount}
             >{"stand"}</Button></div>)}

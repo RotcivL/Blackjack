@@ -8,16 +8,18 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-const GameOverDialog=({gameStart,playerWin,isDealerAccount,isPlayerAccount,withdrawHandler})=>{
+const GameOverDialog=({gameStart,playerWin,isDealerAccount,isPlayerAccount,withdrawHandler,playerBal})=>{
 
     const [isWin,setIsWin]=useState(null)
     const [isOpen, setIsOpen] =useState(false);
 
     useEffect(()=>{
-        if(gameStart===false){
-            setIsOpen(true)
+        if(gameStart===false&&playerWin!==null){
+            setIsOpen(false)
             setIsWin(playerWin)
+            
         }
+        console.log("win: ",isWin)
 
     },[gameStart,playerWin])
 
@@ -26,19 +28,21 @@ const GameOverDialog=({gameStart,playerWin,isDealerAccount,isPlayerAccount,withd
 
         <div>
         <Dialog
-          open={isOpen}
-          onClose={()=>{setIsOpen(false)}}
+          open={isOpen&&isPlayerAccount}
+          //onClose={()=>{setIsOpen(false)}}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {(isWin&&isPlayerAccount)?(<Typography>{"Congrats player"}</Typography>):(<Typography>{"Game over"}</Typography>)}
+            {(isWin&&isPlayerAccount)&&<Typography>{"Congrats player"}</Typography>}
+            {(!isWin&&isPlayerAccount)&&<Typography>{"Game over"}</Typography>}
             
           </DialogTitle>
           <DialogContent>
             
             <DialogContentText id="alert-dialog-description" >
-             {(isWin&&isPlayerAccount)?(<Typography>{`You have won!` }</Typography>):(<Typography>{`You have lost!` }</Typography>)}
+            {(isWin&&isPlayerAccount)&&<Typography>{"You won!"}</Typography>}
+            {(!isWin&&isPlayerAccount)&&<Typography>{"You lost!"}</Typography>}
   
               
             </DialogContentText>
@@ -50,8 +54,18 @@ const GameOverDialog=({gameStart,playerWin,isDealerAccount,isPlayerAccount,withd
             withdrawHandler()
             setIsOpen(false)
 
-            }} >
+            }}
+            disabled={playerBal>0} >
             withdraw
+          </Button>}
+
+          {isPlayerAccount&&<Button onClick={()=>
+          {
+           
+            setIsOpen(false)
+
+            }} >
+           quit
           </Button>}
           </DialogActions>
         </Dialog>

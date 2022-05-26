@@ -20,7 +20,7 @@ let contractBal;
 //cardlist
 let playerHand
 let dealerHand
-//game state
+
 
 let gameStart;
 let playerWin;

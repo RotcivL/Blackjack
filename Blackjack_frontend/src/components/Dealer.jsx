@@ -2,7 +2,7 @@ import { React, useState, useEffect } from 'react';
 import Card from "./Cards"
 import styles from "../style/player.module.css";
 
-const Dealer=({cardList,isDealerTurn,isDealerAccount,isPlayerAccount})=>{
+const Dealer=({cardList,isDealerTurn,isDealerAccount,isPlayerAccount,isDealerReveal})=>{
     
 
     return(
@@ -17,6 +17,8 @@ const Dealer=({cardList,isDealerTurn,isDealerAccount,isPlayerAccount})=>{
           isDealer={true}
           isDealerAccount={isDealerAccount}
           isPlayerAccount={isPlayerAccount}
+          isDealerReveal={isDealerReveal}
+         
          />)}
           
         </div>

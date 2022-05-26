@@ -8,7 +8,7 @@ import StartDialog from './components/StartDialog';
 import Button from '@mui/material/Button';
 import {initializeContract, joinGame, getStatus, startGame,getHandCard,playerHitCard, getGameStart, getPlayerWin, playerStand,startGameEventListener,joinGameEventListener,playerHitEventListener, playerStandEventListener,withdraw} from "./Web3Client";
 import GameOverDialog from './components/GameOverDialog';
-
+import Typography from '@mui/material/Typography';
 
 
 
@@ -111,16 +111,19 @@ const App=()=> {
 
   const[isPlayerJoin,setIsPlayerJoin]=useState(null)
 
+  const [isDealerReveal,setIsDealerReveal]=useState(false)
+
+
   const [time, setTime] = useState(Date.now());
 
-  useEffect(() => {
-    const interval = setInterval(() => setTime(Date.now()), 1000);
-    return () => {
-      clearInterval(interval);
+   useEffect(() => {
+     const interval = setInterval(() => setTime(Date.now()), 1000);
+     return () => {
+       clearInterval(interval);
       
-    };
+     };
     
-  }, []);
+   }, []);
 
 
 
@@ -177,6 +180,10 @@ const joinGameHandler= async ()=>{
   
   }
 
+}
+
+const isDealerRevealHandler=()=>{
+  setIsDealerReveal(true)
 }
 
 const startGameHandler=async()=>{
@@ -237,17 +244,12 @@ const setHandHandler=async()=>{
    setTurnIndex(0)
    //console.log(dealerHand,dealerHand_index)
 
-   console.log(dealerCardList,playerList)
+   //console.log(dealerCardList,playerList)
    
 }
 
  
-   
-    
-/*
-  In certain amount of duration, normal player gets card with clockwise order.
-  Dealer gets card lastly.
-  */
+
      
     
   
@@ -294,27 +296,27 @@ const setHandHandler=async()=>{
   const playerStandHandler= async ()=>{
     const result=await playerStand()
     //console.log("player stand: ",result)
-    const temp_dealerCardList=dealerCardList
-    const oldHandCardNum=temp_dealerCardList.length
-    const handCard=await getHandCard()
-    const dealerHandCard_index=handCard.dealerHand
-    const dealerHandCard=cardInterpreter(dealerHandCard_index)
-    //console.log("dealerhand: ",dealerHandCard)
-    const addedCardNum=dealerHandCard.length-oldHandCardNum
-    if(addedCardNum>0){
-      for (let i=0;i<addedCardNum;i++){
-        temp_dealerCardList.push(dealerHandCard[i+2])
-        console.log(temp_dealerCardList)
-        setDealerCardList([...temp_dealerCardList])
-        await wait(dealingInterval)
+    // const temp_dealerCardList=dealerCardList
+    // const oldHandCardNum=temp_dealerCardList.length
+    // const handCard=await getHandCard()
+    //const dealerHandCard_index=handCard.dealerHand
+    //const dealerHandCard=cardInterpreter(dealerHandCard_index)
+    console.log("dealerhand: ",dealerCardList)
+    // const addedCardNum=dealerHandCard.length-oldHandCardNum
+    // if(addedCardNum>0){
+    //   for (let i=0;i<addedCardNum;i++){
+    //     temp_dealerCardList.push(dealerHandCard[i+2])
+    //     console.log(temp_dealerCardList)
+    //     setDealerCardList([...temp_dealerCardList])
+    //     await wait(dealingInterval)
 
-      }
-    }
-    const gameStart_=await getGameStart()
-    const playerWin_=await getPlayerWin()
+    //   }
+    // }
+    // const gameStart_=await getGameStart()
+    // const playerWin_=await getPlayerWin()
 
-    setGameStart(gameStart_)
-    setPlayerWin(playerWin_)
+    // setGameStart(gameStart_)
+    // setPlayerWin(playerWin_)
 
     
    
@@ -332,7 +334,15 @@ const setHandHandler=async()=>{
     const results=await startGameEventListener()
     if(results){
       const _gameStart=results.returnValues._gameStart
+      const _playerWin=results.returnValues._playerWin
+      const _dealerBalance=results.returnValues._dealerBalance
+      const _playerBalance=results.returnValues._playerBalance
       setisDealerStart(_gameStart)
+      await wait(dealingInterval*4)
+      setPlayerWin(_playerWin)
+      setDealerBal(_dealerBalance)
+      setPlayerBal(_playerBalance)
+    
       console.log("test gamestart listener",results.returnValues._gameStart)
     }
     // else{
@@ -349,7 +359,7 @@ const setHandHandler=async()=>{
       const _player=results.returnValues._player
       setPlayer(_player)
       setIsPlayerJoin(true)
-      console.log("test joingame listener",results.returnValues._player)
+      //console.log("test joingame listener",results.returnValues._player)
     }
     // else{
     //   console.log("invalid res")
@@ -364,12 +374,21 @@ const setHandHandler=async()=>{
     if(results){
       const temp_playerList=playerList
       const playerHand_index=results.returnValues._playerHand
+      const _playerWin=results.returnValues._playerWin
+      const _dealerBalance=results.returnValues._dealerBalance
+      const _playerBalance=results.returnValues._playerBalance
       const playerHand=cardInterpreter(playerHand_index)
       //const temp_cardList=temp_playerList[0].cardList
       //const handCardNum=temp_cardList.length-1
       temp_playerList[0].cardList=playerHand
       
       setPlayerList([...temp_playerList])
+      //setIsDealerReveal(true)
+      setPlayerWin(_playerWin)
+      setDealerBal(_dealerBalance)
+      setPlayerBal(_playerBalance)
+
+      
       //console.log("test handcard listener",results.returnValues._playerHand,playerHand,temp_playerList)
     }
     // else{
@@ -385,12 +404,19 @@ const setHandHandler=async()=>{
     if(results){
       //const temp_dealerList=dealerCardList
       const dealerHand_index=results.returnValues._dealerHand
+      const _playerWin=results.returnValues._playerWin
+      const _dealerBalance=results.returnValues._dealerBalance
+      const _playerBalance=results.returnValues._playerBalance
       const dealerHand=cardInterpreter(dealerHand_index)
       //const temp_cardList=temp_playerList[0].cardList
       //const handCardNum=temp_cardList.length-1
       //temp_dealerList=dealerHand
       
       setDealerCardList([...dealerHand])
+      setIsDealerReveal(true)
+      setPlayerWin(_playerWin)
+      setDealerBal(_dealerBalance)
+      setPlayerBal(_playerBalance)
       //console.log("test standcard listener",temp_dealerList,dealerHand)
     }
     // else{
@@ -438,11 +464,23 @@ const setHandHandler=async()=>{
     <GameOverDialog
     gameStart={gameStart}
     withdrawHandler={withdrawHandler}
+    playerBal={playerBal}
     playerWin={playerWin}
     isPlayerAccount={isPlayerAccount}
     isDealerAccount={isDealerAccount}
     />
-   
+  
+   {(dealerBal&&isPlayerAccount)&&(<Typography>{`Current balance: ${playerBal}`}</Typography>)}
+   {(dealerBal&&!isPlayerAccount&&isPlayerJoin!==null)&&(<Typography>{`Current balance: ${dealerBal}`}</Typography>)}
+   {<Button onClick={()=>
+          {
+            withdrawHandler()
+
+
+            }}
+             >
+            withdraw
+          </Button>}
    
   
    </section>
@@ -457,6 +495,8 @@ const setHandHandler=async()=>{
     isDealerTurn={isDealerTurn}
     isDealerAccount={isDealerAccount}
     isPlayerAccount={isPlayerAccount}
+    isDealerReveal={isDealerReveal}
+    
     />
     
     {playerList.map((player, index)=><Player
@@ -471,6 +511,8 @@ const setHandHandler=async()=>{
       nextPlayerHandler={nextPlayerHandler}
       hitHandler={hitHandler}
       playerStandHandler={playerStandHandler}
+      isDealerRevealHandler={isDealerRevealHandler}
+      isDealerReveal={isDealerReveal}
       />
     )}
     

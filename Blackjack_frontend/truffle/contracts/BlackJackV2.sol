@@ -27,10 +27,10 @@ contract BlackJackV2 {
   uint[] deck = new uint[](52*3);
 
   //events
-  event JoinGame(address _player);
-  event StartGame(bool _gameStart);
-  event PlayerHit(uint[] _playerHand, uint[] _dealerHand);
-  event PlayerStand(uint[] _playerHand, uint[] _dealerHand);
+  event JoinGame(address _player, uint _dealerBalance, uint _playerBalance );
+  event StartGame(bool _gameStart,uint _dealerBalance, uint _playerBalance, bool _playerWin);
+  event PlayerHit(uint[] _playerHand, uint[] _dealerHand,uint _dealerBalance, uint _playerBalance, bool _playerWin, bool _gameStart);
+  event PlayerStand(uint[] _playerHand, uint[] _dealerHand,uint _dealerBalance, uint _playerBalance, bool _playerWin, bool _gameStart);
 
   // CONSTRUCTOR
   constructor(uint _minBet, uint _maxBet) payable {
@@ -75,7 +75,7 @@ contract BlackJackV2 {
     require (dealerBalance >= (msg.value*25)/10);
     player = msg.sender;
     playerBalance += msg.value;
-    emit JoinGame(player);
+    emit JoinGame(player,dealerBalance,playerBalance);
 
   }
 
@@ -120,7 +120,7 @@ contract BlackJackV2 {
       playerBalance = 0;
     }
 
-    emit PlayerHit(playerHand, dealerHand);
+    emit PlayerHit(playerHand, dealerHand,dealerBalance,playerBalance,gameStart,playerWin);
   }
 
   // *** CALLABLE
@@ -140,7 +140,6 @@ contract BlackJackV2 {
     }
     if (dealerLargerValue > 21) {
       playerWin = true;
-      
       dealerBalance -= playerBalance;
       playerBalance *= 2;      
       // transfer money to player
@@ -163,7 +162,7 @@ contract BlackJackV2 {
       playerBalance *= 2;
     }
     gameStart = false;
-    emit PlayerStand(playerHand, dealerHand);
+    emit PlayerStand(playerHand, dealerHand, dealerBalance,playerBalance,gameStart,playerWin);
   }
 
 
@@ -239,7 +238,7 @@ contract BlackJackV2 {
     uint dealerCard2 = hitCard();
     dealerHand.push(dealerCard2);
 
-    emit StartGame(gameStart);
+    
 
     // check if cardValue of player is == 21
     uint[2] memory playerCardValues = getSumInHand(playerHand);
@@ -251,6 +250,8 @@ contract BlackJackV2 {
       dealerBalance -= winnings;
       playerBalance += winnings;
     }
+
+    emit StartGame(gameStart,dealerBalance,playerBalance,playerWin);
     // increase bet size
     // check if cardValue of dealerCard2 is == 1, if yes, insurance
     // check if cardValue of playerCard1 == playerCard2, if yes, split. This part is hard because i cant figure out a way to store multiple hands of a single player.

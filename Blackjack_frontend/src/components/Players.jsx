@@ -5,7 +5,7 @@ import PlayerStatus from './PlayerStatus';
 //import betIcon from "../bet_chips.webp"
 
 
-const Player=({playerIndex,name,cardList,isPlayerAccount,isDealerAccount,whosTurn,nextPlayerHandler,hitHandler,playerStandHandler})=>{
+const Player=({playerIndex,name,cardList,isPlayerAccount,isDealerAccount,whosTurn,nextPlayerHandler,hitHandler,playerStandHandler,isDealerRevealHandler,isDealerReveal})=>{
 
   const [position,setPosition]=useState(null)
   const [isTurn,setIsTurn]=useState(false)
@@ -58,6 +58,7 @@ const Player=({playerIndex,name,cardList,isPlayerAccount,isDealerAccount,whosTur
          hitHandler={hitHandler}
          playerStandHandler={playerStandHandler}
          isPlayerAccount={isPlayerAccount}
+         isDealerRevealHandler={isDealerRevealHandler}
          />
           
         <div className={styles.cardContainer}
@@ -75,6 +76,7 @@ const Player=({playerIndex,name,cardList,isPlayerAccount,isDealerAccount,whosTur
           isDealer={false}
           isPlayerAccount={isPlayerAccount}
           isDealerAccount={isDealerAccount}
+          isDealerReveal={isDealerReveal}
           
           
          />)}

@@ -6,7 +6,7 @@ import styles from "../style/card.module.css";
 
 const ROTATE_FACTOR=9
 const MARGIN_TOP_DES_FACTOR=4
-const Card = ({index,value,type,num,isDealer,isPlayerAccount,isDealerAccount})=>{
+const Card = ({index,value,type,num,isDealer,isPlayerAccount,isDealerAccount,isDealerReveal})=>{
    
    
     const [image, setImage] = useState(null)
@@ -15,7 +15,7 @@ const Card = ({index,value,type,num,isDealer,isPlayerAccount,isDealerAccount})=>
     useEffect(()=>{
         const fetchImg= async () => {
             try{
-                if(index===0&&isDealer&&isPlayerAccount){
+                if(index===0&&isDealer&&isPlayerAccount&&!isDealerReveal){
                     const res = await import(`../cards/BACK.png`)
                     setImage(res.default) 
                 }
@@ -30,7 +30,7 @@ const Card = ({index,value,type,num,isDealer,isPlayerAccount,isDealerAccount})=>
 
         }
         fetchImg()
-    },[value,type,index,isDealer,isPlayerAccount])
+    },[value,type,index,isDealer,isPlayerAccount,isDealerReveal])
 
     
     //console.log(index)
