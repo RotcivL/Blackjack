@@ -1,9 +1,8 @@
 # BlackJack
 Group Members:
 
-1
-2
-3[sinhengw, sinhengw@student.unimelb.edu.au] 
+
+[sinhengw, sinhengw@student.unimelb.edu.au] 
 
 
 YouTube Link: 
@@ -14,10 +13,10 @@ YouTube Link:
 -To deploy the contract, a Ganache needs to be opened.
 
 ## How to compile:
-1.cd truffle 
-2.truffle migrate --reset 
-3.Open another terminal
-4.cd BlacJack_frontend 
-5.npm install 
-6.npm start
-7.Enter URL:http://localhost:3000/ in both browsers.
+1. cd truffle 
+2. truffle migrate --reset 
+3. Open another terminal
+4. cd BlacJack_frontend 
+5. npm install 
+6. npm start
+7. Enter URL:http://localhost:3000/ in both browsers.
