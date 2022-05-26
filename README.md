@@ -1,8 +1,9 @@
 # BlackJack
 Group Members:
 
-
+[vlee3, vlee3@student.unimelb.edu.au]
 [sinhengw, sinhengw@student.unimelb.edu.au] 
+[yizhouw7, yizhouw7@student.unimelb.edu.au]
 
 
 YouTube Link: 
