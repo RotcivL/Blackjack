@@ -6,7 +6,7 @@ Group Members:
 [yizhouw7, yizhouw7@student.unimelb.edu.au]
 
 
-YouTube Link: 
+YouTube Link: https://youtu.be/lr_89dHGKEU
 
 ## Prerequisite:
 -To run the BlackJack, make sure you have two accounts of MetaMask and installed on two browsers (for both dealer and player). We also need to add a local blockchain network for Ganache in MetaMask by entering RPC with http://127.0.0.1:8545 and Chain ID with 1337
