@@ -1,10 +1,9 @@
 # BlackJack
-Group Members:
+Developers:
 
-[vlee3, vlee3@student.unimelb.edu.au]
-[sinhengw, sinhengw@student.unimelb.edu.au] 
-[yizhouw7, yizhouw7@student.unimelb.edu.au]
-
+[@RotcivL](https://github.com/RotcivL) \
+[@tt70629 Ted Wu](https://github.com/tt70629) \
+[@lawrenxe](https://github.com/lawrenxe)
 
 YouTube Link: https://youtu.be/lr_89dHGKEU
 
